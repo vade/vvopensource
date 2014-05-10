@@ -4,7 +4,6 @@
 #else
 #import <Cocoa/Cocoa.h>
 #endif
-#import "MAZeroingWeakRef.h"
 
 
 
@@ -29,17 +28,17 @@
 @interface ObjectHolder : NSObject {
 	BOOL				deleted;
 	id					object;	//	a non-retained reference to the object (dumb weak reference)
-	VV_MAZeroingWeakRef	*zwr;	//	retained instance of VV_MAZeroingWeakRef (smart weak reference)
+	__weak id			zwr;	//	retained instance of VV_MAZeroingWeakRef (smart weak reference)
 }
 
 + (id) createWithObject:(id)o;
-+ (id) createWithZWRObject:(id)o;
++ (id) createWithZWRObject:(__weak id)o;
 - (id) init;
 - (id) initWithObject:(id)o;
-- (id) initWithZWRObject:(id)o;
+- (id) initWithZWRObject:(__weak id)o;
 
 - (void) setObject:(id)n;
-- (void) setZWRObject:(id)n;
+- (void) setZWRObject:(__weak id)n;
 - (id) object;
 
 @end

@@ -14,7 +14,7 @@
 		return nil;
 	return [returnMe autorelease];
 }
-+ (id) createWithZWRObject:(id)o	{
++ (id) createWithZWRObject:(__weak id)o	{
 	ObjectHolder		*returnMe = [[ObjectHolder alloc] initWithZWRObject:o];
 	if (returnMe == nil)
 		return nil;
@@ -46,14 +46,14 @@
 	[self release];
 	return nil;
 }
-- (id) initWithZWRObject:(id)o	{
+- (id) initWithZWRObject:(__weak id)o	{
 	//NSLog(@"%s",__func__);
 	if (o == nil)
 		goto BAIL;
 	if (self = [super init])	{
 		deleted = NO;
 		object = nil;
-		zwr = (o==nil) ? nil : [[VV_MAZeroingWeakRef alloc] initWithTarget:o];
+		zwr = (o==nil) ? nil : o;
 		return self;
 	}
 	BAIL:
@@ -94,21 +94,21 @@
 	VVRELEASE(zwr);
 	object = n;
 }
-- (void) setZWRObject:(id)n	{
+- (void) setZWRObject:(__weak id)n	{
 	object = nil;
 	if (n == nil)	{
 		VVRELEASE(zwr);
 	}
 	else	{
 		VVRELEASE(zwr);
-		zwr = [[VV_MAZeroingWeakRef alloc] initWithTarget:n];
+		zwr = n;
 	}
 }
 - (id) object	{
 	if (object != nil)
 		return object;
 	else if (zwr != nil)
-		return [zwr target];
+		return zwr;
 	return nil;
 }
 
