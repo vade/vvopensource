@@ -96,7 +96,6 @@
 	}
 	BAIL:
 	NSLog(@"\t\terr: %s - BAIL",__func__);
-	[self autorelease];
 	return nil;
 }
 - (id) init	{
@@ -121,7 +120,6 @@
 		queryDelegate = nil;
 		return self;
 	}
-	[self autorelease];
 	return nil;
 }
 - (void) prepareToBeDeleted	{
@@ -210,7 +208,6 @@
 		[tmpNodeName retain];
 	OSSpinLockUnlock(&nameLock);
 	
-	[tmpNodeName autorelease];
 	//	if it's the same class and the nodeName matches, return YES
 	if (([o isKindOfClass:[OSCNode class]]) && ([tmpNodeName isEqualToString:[o nodeName]]))
 		return YES;
