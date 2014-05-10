@@ -1,9 +1,11 @@
 
 //	macros for checking to see if something is nil, and if it's not releasing and setting it to nil
 #define VVRELEASE(item) {if (item != nil)	{			\
+	[item release];										\
 	item = nil;											\
 }}
 #define VVAUTORELEASE(item) {if (item != nil)	{		\
+	[item autorelease];									\
 	item = nil;											\
 }}
 

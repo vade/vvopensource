@@ -285,6 +285,6 @@
 
 size_t vvcurlWriteFunction(void *ptr, size_t size, size_t nmemb, void *stream)	{
 	if (stream != nil)
-		[(__bridge VVCURLDL *)stream writePtr:ptr size:size*nmemb];
+		[(VVCURLDL *)stream writePtr:ptr size:size*nmemb];
 	return size*nmemb;
 }
