@@ -14,7 +14,7 @@
 		case OSCValFloat:
 			return [NSString stringWithFormat:@"<OSCVal f %f>",*(float *)value];
 		case OSCValString:
-			return [NSString stringWithFormat:@"<OSCVal s %@>",(id)value];
+			return [NSString stringWithFormat:@"<OSCVal s %@>",(__bridge id)value];
 		case OSCValTimeTag:
 			//return [NSString stringWithFormat:@"<OSCVal t: %ld-%ld>",*(long *)(value),*(long *)(value+1)];
 			return [NSString stringWithFormat:@"<OSCVal t: %ld-%ld>",(long)(*((long long *)value)>>32),(long)((*(long long *)value) & 0x00000000FFFFFFFF)];
@@ -25,7 +25,7 @@
 		case OSCValChar:
 			return [NSString stringWithFormat:@"<OSCVal c: %s>",(char *)value];
 		case OSCValColor:
-			return [NSString stringWithFormat:@"<OSCVal r %@>",(id)value];
+			return [NSString stringWithFormat:@"<OSCVal r %@>",(__bridge id)value];
 		case OSCValMIDI:
 			return [NSString stringWithFormat:@"<OSCVal m %d-%d-%d-%d>",((Byte *)value)[0],((Byte *)value)[1],((Byte *)value)[2],((Byte *)value)[3]];
 		case OSCValBool:
@@ -56,7 +56,7 @@
 		case OSCValFloat:
 			return [NSString stringWithFormat:@"float %f",*(float *)value];
 		case OSCValString:
-			return [NSString stringWithFormat:@"string \"%@\"",(id)value];
+			return [NSString stringWithFormat:@"string \"%@\"",(__bridge id)value];
 		case OSCValTimeTag:
 			return [NSString stringWithFormat:@"Time Tag %ld-%ld",(long)(*((long long *)value)>>32),(long)((*(long long *)value) & 0x00000000FFFFFFFF)];
 		case OSCVal64Int:
@@ -69,7 +69,7 @@
 #if IPHONE
 			return [NSString stringWithFormat:@"color %@",(id)value];
 #else
-			[(NSColor *)value getComponents:(CGFloat *)colorComps];
+			[(__bridge NSColor *)value getComponents:(CGFloat *)colorComps];
 			return [NSString stringWithFormat:@"color %0.2f-%0.2f-%0.2f-%0.2f",colorComps[0],colorComps[1],colorComps[2],colorComps[3]];
 #endif
 			
@@ -284,7 +284,7 @@
 		UIColor			*calibratedColor = n;
 #else
 		NSColorSpace	*devRGBColorSpace = [NSColorSpace deviceRGBColorSpace];
-		NSColor			*calibratedColor = ((void *)[n colorSpace]==(void *)devRGBColorSpace) ? n :[n colorUsingColorSpaceName:NSDeviceRGBColorSpace];
+		NSColor			*calibratedColor = ((void *)[n colorSpace]==(__bridge void *)devRGBColorSpace) ? n :[n colorUsingColorSpaceName:NSDeviceRGBColorSpace];
 #endif
 		value = [calibratedColor retain];
 		type = OSCValColor;
@@ -409,7 +409,7 @@
 			returnMe = [[OSCValue allocWithZone:z] initWithFloat:*((float *)value)];
 			break;
 		case OSCValString:
-			returnMe = [[OSCValue allocWithZone:z] initWithString:((NSString *)value)];
+			returnMe = [[OSCValue allocWithZone:z] initWithString:((__bridge NSString *)value)];
 			break;
 		case OSCValTimeTag:
 			//returnMe = [[OSCValue allocWithZone:z] initWithTimeSeconds:*((long *)(value)) microSeconds:*((long *)(value+1))];
@@ -425,7 +425,7 @@
 			returnMe = [[OSCValue allocWithZone:z] initWithChar:*(char *)value];
 			break;
 		case OSCValColor:
-			returnMe = [[OSCValue allocWithZone:z] initWithColor:((id)value)];
+			returnMe = [[OSCValue allocWithZone:z] initWithColor:((__bridge id)value)];
 			break;
 		case OSCValMIDI:
 			returnMe = [[OSCValue allocWithZone:z]
@@ -445,7 +445,7 @@
 			break;
 		case OSCValArray:
 			returnMe = [[OSCValue allocWithZone:z] initArray];
-			for (OSCValue *valPtr in (NSMutableArray *)value)	{
+			for (OSCValue *valPtr in (__bridge NSMutableArray *)value)	{
 				OSCValue		*newVal = [valPtr copy];
 				if (newVal != nil)	{
 					[returnMe addValue:newVal];
@@ -454,7 +454,7 @@
 			}
 			break;
 		case OSCValBlob:
-			returnMe = [[OSCValue allocWithZone:z] initWithNSDataBlob:value];
+			returnMe = [[OSCValue allocWithZone:z] initWithNSDataBlob:(__bridge NSData *)(value)];
 			break;
 		case OSCValSMPTE:
 			returnMe = [[OSCValue allocWithZone:z] initWithSMPTEChunk:*((int *)value)];
@@ -483,7 +483,7 @@
 		case OSCValColor:
 		case OSCValArray:
 			if (value != nil)
-				[(id)value release];
+				[(__bridge id)value release];
 			value = nil;
 			break;
 		case OSCValNil:
@@ -491,7 +491,7 @@
 			break;
 		case OSCValBlob:
 			if (value != nil)
-				[(NSData *)value release];
+				[(__bridge NSData *)value release];
 			value = nil;
 			break;
 	}
@@ -564,7 +564,7 @@
 - (void) addValue:(OSCValue *)n	{
 	if (n==nil || type!=OSCValArray || value==nil)
 		return;
-	[(NSMutableArray *)value addObject:n];
+	[(__bridge NSMutableArray *)value addObject:n];
 }
 - (NSMutableArray *) valueArray	{
 	if (type!=OSCValArray || value==nil)
@@ -657,7 +657,7 @@
 #if IPHONE
 			*comps = *(CGColorGetComponents([(UIColor *)value CGColor]));
 #else
-			[(NSColor *)value getComponents:comps];
+			[(__bridge NSColor *)value getComponents:comps];
 #endif
 			returnMe = (double)(comps[0]+comps[1]+comps[2])/(double)3.0;
 			break;
@@ -776,7 +776,7 @@
 			break;
 		case OSCValString:
 			//	OSC STRINGS REQUIRE A NULL CHARACTER AFTER THEM!
-			return ROUNDUP4((strlen([(NSString *)value UTF8String]) + 1));
+			return ROUNDUP4((strlen([(__bridge NSString *)value UTF8String]) + 1));
 			break;
 		case OSCValBool:
 		case OSCValNil:
@@ -787,7 +787,7 @@
 			{
 				int		tmpVal = 0;
 				if (value!=nil)	{
-					for (OSCValue *valPtr in (NSMutableArray *)value)	{
+					for (OSCValue *valPtr in (__bridge NSMutableArray *)value)	{
 						tmpVal += [valPtr bufferLength];
 					}
 				}
@@ -798,7 +798,7 @@
 			if (value == nil)
 				return 0;
 			//	BLOBS DON'T REQUIRE A NULL CHARACTER AFTER THEM!
-			return ROUNDUP4((4 + [(NSData *)value length]));
+			return ROUNDUP4((4 + [(__bridge NSData *)value length]));
 			break;
 	}
 	return 0;
@@ -825,7 +825,7 @@
 		case OSCValArray:
 			returnMe += 2;
 			if (value != nil)	{
-				for (OSCValue *valPtr in (NSMutableArray *)value)	{
+				for (OSCValue *valPtr in (__bridge NSMutableArray *)value)	{
 					returnMe += [valPtr typeSignatureLength];
 				}
 			}
@@ -884,8 +884,8 @@
 			*/
 			break;
 		case OSCValString:
-			tmpLong = strlen([(NSString *)value UTF8String]);
-			charPtr = (unsigned char *)[(NSString *)value UTF8String];
+			tmpLong = strlen([(__bridge NSString *)value UTF8String]);
+			charPtr = (unsigned char *)[(__bridge NSString *)value UTF8String];
 			strncpy((char *)(b+*d),(char *)charPtr,tmpLong);
 			*d = *d + (int)tmpLong + (int)1;
 			*d = ROUNDUP4(*d);
@@ -933,13 +933,13 @@
 				b[*d+i] = tmpChar;
 			}
 #else
-			tmpChar = [(NSColor *)value redComponent] * 255.0;
+			tmpChar = [(__bridge NSColor *)value redComponent] * 255.0;
 			b[*d] = tmpChar;
-			tmpChar = [(NSColor *)value greenComponent] * 255.0;
+			tmpChar = [(__bridge NSColor *)value greenComponent] * 255.0;
 			b[*d+1] = tmpChar;
-			tmpChar = [(NSColor *)value blueComponent] * 255.0;
+			tmpChar = [(__bridge NSColor *)value blueComponent] * 255.0;
 			b[*d+2] = tmpChar;
-			tmpChar = [(NSColor *)value alphaComponent] * 255.0;
+			tmpChar = [(__bridge NSColor *)value alphaComponent] * 255.0;
 			b[*d+3] = tmpChar;
 #endif
 			*d += 4;
@@ -974,7 +974,7 @@
 			++*t;
 			
 			if (value != nil)	{
-				for (OSCValue *tmpVal in (NSMutableArray *)value)	{
+				for (OSCValue *tmpVal in (__bridge NSMutableArray *)value)	{
 					[tmpVal writeToBuffer:b typeOffset:t dataOffset:d];
 				}
 			}
@@ -984,14 +984,14 @@
 			break;
 		case OSCValBlob:
 			//	calculate the size of the blob, write it to the buffer
-			tmpLong = [(NSData *)value length];
+			tmpLong = [(__bridge NSData *)value length];
 			tmpLong = htonl((int)tmpLong);
 			for (i=0;i<4;++i)
 				b[*d+i] = 255 & (tmpLong >> (i*8));
 			*d += 4;
 			//	now write the actual contents of the blob to the buffer
-			tmpLong = [(NSData *)value length];
-			voidPtr = (void *)[(NSData *)value bytes];
+			tmpLong = [(__bridge NSData *)value length];
+			voidPtr = (void *)[(__bridge NSData *)value bytes];
 			memcpy((void *)(b+*d),(void *)voidPtr,tmpLong);
 			*d = *d + (int)tmpLong;
 			*d = ROUNDUP4(*d);
