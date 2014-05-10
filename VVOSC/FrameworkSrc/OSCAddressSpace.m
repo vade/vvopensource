@@ -92,7 +92,6 @@ id				_mainVVOSCAddressSpace;
 						}
 						//	now add the item to returnMe!
 						[returnMe addItem:newItem];
-						[newItem autorelease];
 					}
 				}
 			}
