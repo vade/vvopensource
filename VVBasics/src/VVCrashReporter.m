@@ -75,8 +75,6 @@
 		returnMe = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 		if (returnMe == nil)
 			NSLog(@"\t\terror: couldn't create SP string from data %s",__func__);
-		else
-			[returnMe autorelease];
 	}
 	@catch (NSException *err)	{
 		NSLog(@"\t\terr: caught exception: %@ %s, %@",err,__func__,t);
@@ -129,9 +127,11 @@
 	VVRELEASE(systemProfilerDict);
 	VVRELEASE(consoleLog);
 	delegate = nil;
+	
 	//	explicitly release all the objects in the array of top level objects
-	if ((nibTopLevelObjects!=nil)&&([nibTopLevelObjects count]>0))
-		[nibTopLevelObjects makeObjectsPerformSelector:@selector(release)];
+//	if ((nibTopLevelObjects!=nil)&&([nibTopLevelObjects count]>0))
+//		[nibTopLevelObjects makeObjectsPerformSelector:@selector(release)];
+
 	//	release the actual array of top level objects
 	VVRELEASE(nibTopLevelObjects);
 	//	release the nib
@@ -604,8 +604,7 @@
 	
 	//	if there was an error
 	if (networkErr != 0)	{
-		//	release the VVCURLDL
-		[h autorelease];
+
 		//	the last crash date should be BEFORE the last modification date of the log i just finished sending!
 		NSDictionary		*attribDict = [[NSFileManager defaultManager] attributesOfItemAtPath:finishedPath error:nil];
 		NSDate				*crashModDate = [attribDict objectForKey:NSFileModificationDate];
@@ -632,8 +631,7 @@
 	}
 	//	else there was no error
 	else	{
-		//	release the VVCURLDL
-		[h autorelease];
+
 		
 		//	retain the path to the crash log, just in case
 		[finishedPath retain];
