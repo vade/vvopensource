@@ -202,14 +202,10 @@
 		return;
 	//	get a write-lock on the array, i'll be changing its order
 	[managerSpriteArray wrlock];
-		//	retain me so i don't get released during any of this silliness
-		[self retain];
 		//	remove me from my manager's sprite array
 		[managerSpriteArray removeIdenticalPtr:self];
 		//	add me to my manager's sprite array at the "top"
 		[managerSpriteArray insertObject:self atIndex:0];
-		//	autorelease me, so the impact on my retain count has been a net 0
-		[self autorelease];
 	//	unlock the array
 	[managerSpriteArray unlock];
 }
@@ -223,14 +219,10 @@
 		return;
 	//	get a write-lock on the array, i'll be changing its order
 	[managerSpriteArray wrlock];
-		//	retain me so i don't get released during any of this silliness
-		[self retain];
 		//	remove me from my manager's sprite array
 		[managerSpriteArray removeIdenticalPtr:self];
 		//	add me to my manager's sprite array at the "bottom"
 		[managerSpriteArray addObject:self];
-		//	autorelease me, so the impact on my retain count has been a net 0
-		[self autorelease];
 	//	unlock the array
 	[managerSpriteArray unlock];
 }

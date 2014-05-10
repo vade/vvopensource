@@ -1199,7 +1199,7 @@ long			_spriteGLViewSysVers;
 	if ((deleted)||(c==nil))
 		return;
 	NSColorSpace	*devRGBColorSpace = [NSColorSpace deviceRGBColorSpace];
-	NSColor			*calibratedColor = ((void *)[c colorSpace]==(void *)devRGBColorSpace) ? c :[c colorUsingColorSpaceName:NSDeviceRGBColorSpace];
+	NSColor			*calibratedColor = ((void *)[c colorSpace]==(__bridge void *)devRGBColorSpace) ? c :[c colorUsingColorSpaceName:NSDeviceRGBColorSpace];
 	pthread_mutex_lock(&glLock);
 	//CGLContextObj		cgl_ctx = [[self openGLContext] CGLContextObj];
 	CGFloat			tmpVals[4];
@@ -1227,7 +1227,7 @@ long			_spriteGLViewSysVers;
 	if ((deleted)||(c==nil))
 		return;
 	NSColorSpace	*devRGBColorSpace = [NSColorSpace deviceRGBColorSpace];
-	NSColor			*calibratedColor = ((void *)[c colorSpace]==(void *)devRGBColorSpace) ? c :[c colorUsingColorSpaceName:NSDeviceRGBColorSpace];
+	NSColor			*calibratedColor = ((void *)[c colorSpace]==(__bridge void *)devRGBColorSpace) ? c :[c colorUsingColorSpaceName:NSDeviceRGBColorSpace];
 	pthread_mutex_lock(&glLock);
 	//CGLContextObj		cgl_ctx = [[self openGLContext] CGLContextObj];
 	[calibratedColor getComponents:(CGFloat *)borderColor];
