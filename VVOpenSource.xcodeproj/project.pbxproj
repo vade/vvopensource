@@ -149,7 +149,6 @@
 		966CCC6214322FBD006D580F /* ElementChain.m in Sources */ = {isa = PBXBuildFile; fileRef = 966CCC6114322FBD006D580F /* ElementChain.m */; };
 		966CCC6514322FCA006D580F /* AppController.m in Sources */ = {isa = PBXBuildFile; fileRef = 966CCC6414322FCA006D580F /* AppController.m */; };
 		966CCC6814322FD6006D580F /* NetworkSetupController.m in Sources */ = {isa = PBXBuildFile; fileRef = 966CCC6714322FD6006D580F /* NetworkSetupController.m */; };
-		966D3E9518634F8000A7BE9E /* LICENSE in Headers */ = {isa = PBXBuildFile; fileRef = 96C00549185A477000C33FE2 /* LICENSE */; settings = {ATTRIBUTES = (Public, ); }; };
 		96765969100F818900E02974 /* VVOSC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9628D0C5100E89F700C3944E /* VVOSC.framework */; };
 		9676596A100F818F00E02974 /* VVBasics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 961EA8ED100E8565007E6C25 /* VVBasics.framework */; };
 		96765988100F81AB00E02974 /* VVOSC.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9628D0C5100E89F700C3944E /* VVOSC.framework */; };
@@ -212,10 +211,6 @@
 		96A9911D108D668700895DC1 /* VVCrashReporter.h in Headers */ = {isa = PBXBuildFile; fileRef = 96A9911A108D668700895DC1 /* VVCrashReporter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		96A9911E108D668700895DC1 /* VVCrashReporter.xib in Resources */ = {isa = PBXBuildFile; fileRef = 96A9911B108D668700895DC1 /* VVCrashReporter.xib */; };
 		96A99138108D674400895DC1 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9652676F108C29AC00A2906D /* SystemConfiguration.framework */; };
-		96AC180C185A41A500917830 /* MAZeroingWeakRef.h in Headers */ = {isa = PBXBuildFile; fileRef = 96AC1809185A41A500917830 /* MAZeroingWeakRef.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		96AC180D185A41A500917830 /* MAZeroingWeakRef.m in Sources */ = {isa = PBXBuildFile; fileRef = 96AC180A185A41A500917830 /* MAZeroingWeakRef.m */; };
-		96AC180E185A41A500917830 /* MAZeroingWeakRef.m in Sources */ = {isa = PBXBuildFile; fileRef = 96AC180A185A41A500917830 /* MAZeroingWeakRef.m */; };
-		96AC180F185A41A500917830 /* MAZeroingWeakRefNativeZWRNotAllowedTable.h in Headers */ = {isa = PBXBuildFile; fileRef = 96AC180B185A41A500917830 /* MAZeroingWeakRefNativeZWRNotAllowedTable.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		96ACD7241706416300138AE6 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96ACD7231706416300138AE6 /* Cocoa.framework */; };
 		96ACD72E1706416400138AE6 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 96ACD72C1706416400138AE6 /* InfoPlist.strings */; };
 		96ACD7301706416400138AE6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 96ACD72F1706416400138AE6 /* main.m */; };
@@ -237,7 +232,6 @@
 		96BF10AE100E95330079A2E6 /* VVOSC.h in Headers */ = {isa = PBXBuildFile; fileRef = 96BF10AD100E95330079A2E6 /* VVOSC.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		96BF19C118C4ED7000B76FA3 /* VVScrollView.h in Headers */ = {isa = PBXBuildFile; fileRef = 96BF19BF18C4ED7000B76FA3 /* VVScrollView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		96BF19C218C4ED7000B76FA3 /* VVScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 96BF19C018C4ED7000B76FA3 /* VVScrollView.m */; };
-		96C0057E185A47D000C33FE2 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 96C00549185A477000C33FE2 /* LICENSE */; };
 		96C18C2F185A1A740082DE35 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96C18C2E185A1A740082DE35 /* Foundation.framework */; };
 		96C18C34185A1A740082DE35 /* VVBasicsStatic.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 96C18C33185A1A740082DE35 /* VVBasicsStatic.h */; };
 		96C18C3F185A1A7D0082DE35 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96C18C2E185A1A740082DE35 /* Foundation.framework */; };
@@ -279,8 +273,6 @@
 		96ED419910628A5500D8373F /* VVCURLDL.h in Headers */ = {isa = PBXBuildFile; fileRef = 96ED419710628A5500D8373F /* VVCURLDL.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		96ED419A10628A5500D8373F /* VVCURLDL.m in Sources */ = {isa = PBXBuildFile; fileRef = 96ED419810628A5500D8373F /* VVCURLDL.m */; };
 		96F2F59D12D0B9ED003715F3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96A99011108CEA2600895DC1 /* Foundation.framework */; };
-		96F60B23185BA5370003410A /* MAZeroingWeakRef.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 96AC1809185A41A500917830 /* MAZeroingWeakRef.h */; };
-		96F60B25185BA54A0003410A /* MAZeroingWeakRefNativeZWRNotAllowedTable.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 96AC180B185A41A500917830 /* MAZeroingWeakRefNativeZWRNotAllowedTable.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -575,8 +567,6 @@
 				969B248A185A2324007B2C01 /* ObjectHolder.h in CopyFiles */,
 				969B248B185A2324007B2C01 /* MutNRLockArray.h in CopyFiles */,
 				969B248C185A2324007B2C01 /* MutNRLockDict.h in CopyFiles */,
-				96F60B23185BA5370003410A /* MAZeroingWeakRef.h in CopyFiles */,
-				96F60B25185BA54A0003410A /* MAZeroingWeakRefNativeZWRNotAllowedTable.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -758,9 +748,6 @@
 		96A9911B108D668700895DC1 /* VVCrashReporter.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = VVCrashReporter.xib; path = VVBasics/src/VVCrashReporter.xib; sourceTree = "<group>"; };
 		96A99144108D68AD00895DC1 /* serverSideCrashReporter.php */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.php; name = serverSideCrashReporter.php; path = CrashReporterTestApp/serverSideCrashReporter.php; sourceTree = "<group>"; };
 		96A99158108D6B8100895DC1 /* READ ME.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "READ ME.txt"; path = "CrashReporterTestApp/READ ME.txt"; sourceTree = "<group>"; };
-		96AC1809185A41A500917830 /* MAZeroingWeakRef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MAZeroingWeakRef.h; path = external/MAZeroingWeakRef/Source/MAZeroingWeakRef.h; sourceTree = "<group>"; };
-		96AC180A185A41A500917830 /* MAZeroingWeakRef.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MAZeroingWeakRef.m; path = external/MAZeroingWeakRef/Source/MAZeroingWeakRef.m; sourceTree = "<group>"; };
-		96AC180B185A41A500917830 /* MAZeroingWeakRefNativeZWRNotAllowedTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MAZeroingWeakRefNativeZWRNotAllowedTable.h; path = external/MAZeroingWeakRef/Source/MAZeroingWeakRefNativeZWRNotAllowedTable.h; sourceTree = "<group>"; };
 		96ACD7211706416300138AE6 /* OSCPingTester.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OSCPingTester.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		96ACD7231706416300138AE6 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		96ACD7261706416400138AE6 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -790,7 +777,6 @@
 		96BF10AD100E95330079A2E6 /* VVOSC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VVOSC.h; path = VVOSC/VVOSC.h; sourceTree = "<group>"; };
 		96BF19BF18C4ED7000B76FA3 /* VVScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VVScrollView.h; sourceTree = "<group>"; };
 		96BF19C018C4ED7000B76FA3 /* VVScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VVScrollView.m; sourceTree = "<group>"; };
-		96C00549185A477000C33FE2 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; name = LICENSE; path = external/MAZeroingWeakRef/LICENSE; sourceTree = "<group>"; };
 		96C18C2D185A1A740082DE35 /* libVVBasics.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libVVBasics.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		96C18C2E185A1A740082DE35 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		96C18C32185A1A740082DE35 /* VVBasicsStatic-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VVBasicsStatic-Prefix.pch"; sourceTree = "<group>"; };
@@ -1321,20 +1307,8 @@
 		96C00547185A445B00C33FE2 /* EXTERNAL CODE */ = {
 			isa = PBXGroup;
 			children = (
-				96C00548185A447900C33FE2 /* MAZeroingWeakRef */,
 			);
 			name = "EXTERNAL CODE";
-			sourceTree = "<group>";
-		};
-		96C00548185A447900C33FE2 /* MAZeroingWeakRef */ = {
-			isa = PBXGroup;
-			children = (
-				96C00549185A477000C33FE2 /* LICENSE */,
-				96AC1809185A41A500917830 /* MAZeroingWeakRef.h */,
-				96AC180A185A41A500917830 /* MAZeroingWeakRef.m */,
-				96AC180B185A41A500917830 /* MAZeroingWeakRefNativeZWRNotAllowedTable.h */,
-			);
-			name = MAZeroingWeakRef;
 			sourceTree = "<group>";
 		};
 		96C18C30185A1A740082DE35 /* VVBasicsStatic */ = {
@@ -1390,7 +1364,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				966D3E9518634F8000A7BE9E /* LICENSE in Headers */,
 				969FCE9E120DB9DA0067E617 /* lgpl-3.0.txt in Headers */,
 				961EA957100E8834007E6C25 /* MutLockArray.h in Headers */,
 				961EA959100E8834007E6C25 /* MutLockDict.h in Headers */,
@@ -1406,8 +1379,6 @@
 				9601770D108D71EA008F90CA /* VVCrashReporterDescriptionField.h in Headers */,
 				5107014210E14BF200A67653 /* MutNRLockDict.h in Headers */,
 				9621356914C7086C00E76C81 /* VVAssertionHandler.h in Headers */,
-				96AC180C185A41A500917830 /* MAZeroingWeakRef.h in Headers */,
-				96AC180F185A41A500917830 /* MAZeroingWeakRefNativeZWRNotAllowedTable.h in Headers */,
 				9658C26118F86BCF004A6BCF /* VVSysVersion.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1762,7 +1733,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				96A9911E108D668700895DC1 /* VVCrashReporter.xib in Resources */,
-				96C0057E185A47D000C33FE2 /* LICENSE in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1915,7 +1885,6 @@
 				9601770E108D71EA008F90CA /* VVCrashReporterDescriptionField.m in Sources */,
 				5107014310E14BF200A67653 /* MutNRLockDict.m in Sources */,
 				9621356A14C7086C00E76C81 /* VVAssertionHandler.m in Sources */,
-				96AC180D185A41A500917830 /* MAZeroingWeakRef.m in Sources */,
 				9658C26218F86BCF004A6BCF /* VVSysVersion.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2028,7 +1997,6 @@
 				96C18C57185A1AED0082DE35 /* ObjectHolder.m in Sources */,
 				96C18C58185A1AED0082DE35 /* MutNRLockArray.m in Sources */,
 				96C18C59185A1AED0082DE35 /* MutNRLockDict.m in Sources */,
-				96AC180E185A41A500917830 /* MAZeroingWeakRef.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
