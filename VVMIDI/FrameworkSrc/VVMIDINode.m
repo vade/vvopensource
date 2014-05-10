@@ -85,14 +85,14 @@ double			_machTimeToNsFactor;
 		return nil;
 	}
 	//	make a new destination, attach it to the client
-	err = MIDIDestinationCreate(clientRef,(CFStringRef)n,myMIDIReadProc,self,&endpointRef);
+	err = MIDIDestinationCreate(clientRef,(__bridge CFStringRef)n,myMIDIReadProc,self,&endpointRef);
 	if (err != noErr)	{
 		NSLog(@"\t\terror %ld at MIDIDestinationCreate() A",(long)err);
 		[self release];
 		return nil;
 	}
 	//	create a MIDIInputPort- the client owns the port
-	err = MIDIInputPortCreate(clientRef,(CFStringRef)n,myMIDIReadProc,self,&portRef);
+	err = MIDIInputPortCreate(clientRef,(__bridge CFStringRef)n,myMIDIReadProc,self,&portRef);
 	if (err != noErr)	{
 		NSLog(@"\t\terror %ld at MIDIInputPortCreate B",(long)err);
 		[self release];
@@ -151,21 +151,21 @@ double			_machTimeToNsFactor;
 	self = [self commonInit];
 	name = [n copy];
 	//	create a midi client which will receive midi data to work with
-	err = MIDIClientCreate((CFStringRef)n,NULL,NULL,&clientRef);
+	err = MIDIClientCreate((__bridge CFStringRef)n,NULL,NULL,&clientRef);
 	if (err != noErr)	{
 		NSLog(@"\t\terror %ld at MIDIClientCreate D",(long)err);
 		[self release];
 		return nil;
 	}
 	//	make a new destination, so other apps know i'm here
-	err = MIDISourceCreate(clientRef,(CFStringRef)n,&endpointRef);
+	err = MIDISourceCreate(clientRef,(__bridge CFStringRef)n,&endpointRef);
 	if (err != noErr)	{
 		NSLog(@"\t\terror %ld at MIDISourceCreate A",(long)err);
 		[self release];
 		return nil;
 	}
 	//	create a MIDIOutputPort- the client owns the port
-	err = MIDIOutputPortCreate(clientRef,(CFStringRef)n,&portRef);
+	err = MIDIOutputPortCreate(clientRef,(__bridge CFStringRef)n,&portRef);
 	if (err != noErr)	{
 		NSLog(@"\t\terror %ld at MIDIOutputPortCreate B",(long)err);
 		[self release];
@@ -283,7 +283,7 @@ double			_machTimeToNsFactor;
 		NSLog(@"\t\terror %ld at MIDIObjectGetStringProperty() a",(long)err);
 	else	{
 		if (tmpString != NULL)	{
-			name = [[NSString stringWithString:(NSString *)tmpString] retain];
+			name = [[NSString stringWithString:(__bridge NSString *)tmpString] retain];
 			[properties setValue:name forKey:@"name"];
 			CFRelease(tmpString);
 		}
@@ -311,7 +311,7 @@ double			_machTimeToNsFactor;
 	else	{
 		//NSLog(@"\t\tmodel is %@",tmpString);
 		if (tmpString != NULL)	{
-			[properties setValue:(NSString *)tmpString forKey:@"model"];
+			[properties setValue:(__bridge NSString *)tmpString forKey:@"model"];
 			CFRelease(tmpString);
 		}
 	}
@@ -337,7 +337,7 @@ double			_machTimeToNsFactor;
 			else	{
 				//NSLog(@"\t\tdevice name is %@",tmpString);
 				VVRELEASE(deviceName);
-				deviceName = (tmpString==nil) ? nil : [(NSString *)tmpString copy];
+				deviceName = (tmpString==nil) ? nil : [(__bridge NSString *)tmpString copy];
 			}
 		}
 	}
@@ -777,9 +777,9 @@ void myMIDIReadProc(const MIDIPacketList *pktList, void *readProcRefCon, void *s
 	int						j;
 	int						msgElementCount;
 	VVMIDIMessage			*newMsg = nil;
-	BOOL					processingSysex = [(VVMIDINode *)readProcRefCon processingSysex];
-	int						processingSysexIterationCount = [(VVMIDINode *)readProcRefCon processingSysexIterationCount];
-	NSMutableArray			*sysex = [(VVMIDINode *)readProcRefCon sysexArray];
+	BOOL					processingSysex = [(__bridge VVMIDINode *)readProcRefCon processingSysex];
+	int						processingSysexIterationCount = [(__bridge VVMIDINode *)readProcRefCon processingSysexIterationCount];
+	NSMutableArray			*sysex = [(__bridge VVMIDINode *)readProcRefCon sysexArray];
 	NSMutableArray			*msgs = [NSMutableArray arrayWithCapacity:0];
 	BOOL					hadMTCMsg = NO;
 	BOOL					hadClockMsg = NO;
@@ -849,7 +849,7 @@ void myMIDIReadProc(const MIDIPacketList *pktList, void *readProcRefCon, void *s
 								if (newMsg != nil)	{
 									if ([newMsg isFullFrameSMPTE])	{
 										long					err = noErr;
-										CAClockRef				tmpClock = [(VVMIDINode *)readProcRefCon mtcClockRef];
+										CAClockRef				tmpClock = [(__bridge VVMIDINode *)readProcRefCon mtcClockRef];
 										CAClockSMPTEFormat		clockSMPTEFormat = kSMPTETimeType30;
 										UInt32					tmpSize = sizeof(clockSMPTEFormat);
 										//	get the SMPTE format from the clock
@@ -940,11 +940,11 @@ void myMIDIReadProc(const MIDIPacketList *pktList, void *readProcRefCon, void *s
 											//	get current MSB & LSB from node
 											int			msb;
 											int			lsb;
-											[(VVMIDINode *)readProcRefCon _getValsForCC:cc channel:channel toMSB:&msb LSB:&lsb];
+											[(__bridge VVMIDINode *)readProcRefCon _getValsForCC:cc channel:channel toMSB:&msb LSB:&lsb];
 											msb = currByte;
 											//NSLog(@"\t\tMSB.  vals are now %d / %d",msb,lsb);
 											//	push updated MSB & LSB to node & newMsg
-											[(VVMIDINode *)readProcRefCon _setValsForCC:cc channel:channel fromMSB:msb LSB:lsb];
+											[(__bridge VVMIDINode *)readProcRefCon _setValsForCC:cc channel:channel fromMSB:msb LSB:lsb];
 											[newMsg setData2:msb];
 											if (lsb>=0 && lsb<=127)
 												[newMsg setData3:lsb];
@@ -968,11 +968,11 @@ void myMIDIReadProc(const MIDIPacketList *pktList, void *readProcRefCon, void *s
 											//	get current MSB & LSB from node
 											int			msb;
 											int			lsb;
-											[(VVMIDINode *)readProcRefCon _getValsForCC:cc channel:channel toMSB:&msb LSB:&lsb];
+											[(__bridge VVMIDINode *)readProcRefCon _getValsForCC:cc channel:channel toMSB:&msb LSB:&lsb];
 											lsb = currByte;
 											//NSLog(@"\t\tLSB.  vals are now %d / %d",msb,lsb);
 											//	push updated MSB & LSB to node & newMsg
-											[(VVMIDINode *)readProcRefCon _setValsForCC:cc channel:channel fromMSB:msb LSB:lsb];
+											[(__bridge VVMIDINode *)readProcRefCon _setValsForCC:cc channel:channel fromMSB:msb LSB:lsb];
 											[newMsg setData2:msb];
 											[newMsg setData3:lsb];
 											//	run through the local array- make sure there aren't any other messages from this channel + ctrl (remove them if there are)
@@ -1011,7 +1011,7 @@ void myMIDIReadProc(const MIDIPacketList *pktList, void *readProcRefCon, void *s
 							if (highNibble == 7)	{
 								int			lowNibble = (mtcVal & 0x0F);
 								long	err = noErr;
-								CAClockRef	tmpClock = [(VVMIDINode *)readProcRefCon mtcClockRef];
+								CAClockRef	tmpClock = [(__bridge VVMIDINode *)readProcRefCon mtcClockRef];
 								//UInt32		smpteType = ((lowNibble >> 1) & 0x03);	//	0-based, max val is 3. from 0, vals represent: 24fps, 25fps, 30-drop fps, 30fps.
 								UInt32		smpteType = 0;
 								UInt32		tmpSize = sizeof(UInt32);
@@ -1045,25 +1045,25 @@ void myMIDIReadProc(const MIDIPacketList *pktList, void *readProcRefCon, void *s
 	}
 	
 	if (hadMTCMsg)	{
-		CAClockRef		tmpClock = [(VVMIDINode *)readProcRefCon mtcClockRef];
+		CAClockRef		tmpClock = [(__bridge VVMIDINode *)readProcRefCon mtcClockRef];
 		long			err = CAClockParseMIDI(tmpClock, pktList);
 		if (err != noErr)
 			NSLog(@"\t\terr %ld at CAClockParseMIDI() for MTC in %s",err,__func__);
 	}
 	if (hadClockMsg)	{
-		CAClockRef		tmpClock = [(VVMIDINode *)readProcRefCon bpmClockRef];
+		CAClockRef		tmpClock = [(__bridge VVMIDINode *)readProcRefCon bpmClockRef];
 		long			err = CAClockParseMIDI(tmpClock, pktList);
 		if (err != noErr)
 			NSLog(@"\t\terr %ld at CAClockParseMIDI() for BPM in %s",err,__func__);
 	}
 	
 	//	update the sysex-related flags in the actual VVMIDINode object
-	[(VVMIDINode *)readProcRefCon setProcessingSysex:processingSysex];
-	[(VVMIDINode *)readProcRefCon setProcessingSysexIterationCount:processingSysexIterationCount];
+	[(__bridge VVMIDINode *)readProcRefCon setProcessingSysex:processingSysex];
+	[(__bridge VVMIDINode *)readProcRefCon setProcessingSysexIterationCount:processingSysexIterationCount];
 	
 	//	hand the array of messages to the actual VVMIDINode object
 	if ((msgs != nil) && ([msgs count] > 0))
-		[(VVMIDINode *)readProcRefCon receivedMIDI:msgs];
+		[(__bridge VVMIDINode *)readProcRefCon receivedMIDI:msgs];
 	
 	[pool release];
 	//NSLog(@"\t\tmyMIDIReadProc - FINISHED");
@@ -1078,7 +1078,7 @@ void myMIDINotificationProc(const MIDINotification *msg, void *refCon)	{
 	*/
 	//	multiple messages may get sent out for a single action, so it makes sense to simply ignore everything but 'kMIDIMsgSetupChanged'
 	if (msg->messageID == kMIDIMsgSetupChanged)
-		[(VVMIDINode *)refCon setupChanged];
+		[(__bridge VVMIDINode *)refCon setupChanged];
 }
 
 void senderReadProc(const MIDIPacketList *pktList, void *readProcRefCon, void *srcConnRefCon)	{
