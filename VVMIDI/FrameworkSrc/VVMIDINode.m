@@ -38,34 +38,41 @@ double			_machTimeToNsFactor;
 	
 	OSStatus				err;
 	
-	self = [self commonInit];
-	//	store a reference to the passed endpoint
-	endpointRef = e;
-	//	load the properties for the endpoint
-	[self loadProperties];
-	//	create MIDIClientRef- this will receive the incoming midi data
-	err = MIDIClientCreate((CFStringRef)@"clientName", NULL, NULL, &clientRef);
-	if (err != noErr)	{
-		NSLog(@"\t\terror %ld at MIDIClientCreate() A",(long)err);
-		[self release];
-		return nil;
+	self = [super init];
+	if(self)
+	{
+		// comon init methods
+		[self commonInit];
+		//	store a reference to the passed endpoint
+		endpointRef = e;
+		//	load the properties for the endpoint
+		[self loadProperties];
+		//	create MIDIClientRef- this will receive the incoming midi data
+		err = MIDIClientCreate((CFStringRef)@"clientName", NULL, NULL, &clientRef);
+		if (err != noErr)	{
+			NSLog(@"\t\terror %ld at MIDIClientCreate() A",(long)err);
+			[self release];
+			return nil;
+		}
+		//	create a MIDIInputPort- the client owns the port
+		err = MIDIInputPortCreate(clientRef,(CFStringRef)@"portName",myMIDIReadProc,self,&portRef);
+		if (err != noErr)	{
+			NSLog(@"\t\terror %ld at MIDIInputPortCreate() A",(long)err);
+			[self release];
+			return nil;
+		}
+		//	connect the MIDIInputPort to the endpoint (the port connects the client to the source)
+		err = MIDIPortConnectSource(portRef,endpointRef,NULL);
+		if (err != noErr)	{
+			NSLog(@"\t\terror %ld at MIDIPortConnectSource() A",(long)err);
+			[self release];
+			return nil;
+		}
+		
+		return self;
 	}
-	//	create a MIDIInputPort- the client owns the port
-	err = MIDIInputPortCreate(clientRef,(CFStringRef)@"portName",myMIDIReadProc,self,&portRef);
-	if (err != noErr)	{
-		NSLog(@"\t\terror %ld at MIDIInputPortCreate() A",(long)err);
-		[self release];
-		return nil;
-	}
-	//	connect the MIDIInputPort to the endpoint (the port connects the client to the source)
-	err = MIDIPortConnectSource(portRef,endpointRef,NULL);
-	if (err != noErr)	{
-		NSLog(@"\t\terror %ld at MIDIPortConnectSource() A",(long)err);
-		[self release];
-		return nil;
-	}
+	return nil;
 	
-	return self;
 }
 - (id) initReceiverWithName:(NSString *)n	{
 	if (n == nil)	{
@@ -75,34 +82,40 @@ double			_machTimeToNsFactor;
 	
 	OSStatus			err;
 	
-	self = [self commonInit];
-	name = [n copy];
-	//	create a midi client which will receive incoming midi data
-	err = MIDIClientCreate((CFStringRef)@"clientName",myMIDINotificationProc,self,&clientRef);
-	if (err != noErr)	{
-		NSLog(@"\t\terror %ld at MIDIClientCreate B",(long)err);
-		[self release];
-		return nil;
+	self = [super init];
+	if(self)
+	{
+		// comon init methods
+		[self commonInit];
+		name = [n copy];
+		//	create a midi client which will receive incoming midi data
+		err = MIDIClientCreate((CFStringRef)@"clientName",myMIDINotificationProc,self,&clientRef);
+		if (err != noErr)	{
+			NSLog(@"\t\terror %ld at MIDIClientCreate B",(long)err);
+			[self release];
+			return nil;
+		}
+		//	make a new destination, attach it to the client
+		err = MIDIDestinationCreate(clientRef,(__bridge CFStringRef)n,myMIDIReadProc,self,&endpointRef);
+		if (err != noErr)	{
+			NSLog(@"\t\terror %ld at MIDIDestinationCreate() A",(long)err);
+			[self release];
+			return nil;
+		}
+		//	create a MIDIInputPort- the client owns the port
+		err = MIDIInputPortCreate(clientRef,(__bridge CFStringRef)n,myMIDIReadProc,self,&portRef);
+		if (err != noErr)	{
+			NSLog(@"\t\terror %ld at MIDIInputPortCreate B",(long)err);
+			[self release];
+			return nil;
+		}
+		
+		//	load the properties for the endpoint
+		[self loadProperties];
+		
+		return self;
 	}
-	//	make a new destination, attach it to the client
-	err = MIDIDestinationCreate(clientRef,(__bridge CFStringRef)n,myMIDIReadProc,self,&endpointRef);
-	if (err != noErr)	{
-		NSLog(@"\t\terror %ld at MIDIDestinationCreate() A",(long)err);
-		[self release];
-		return nil;
-	}
-	//	create a MIDIInputPort- the client owns the port
-	err = MIDIInputPortCreate(clientRef,(__bridge CFStringRef)n,myMIDIReadProc,self,&portRef);
-	if (err != noErr)	{
-		NSLog(@"\t\terror %ld at MIDIInputPortCreate B",(long)err);
-		[self release];
-		return nil;
-	}
-	
-	//	load the properties for the endpoint
-	[self loadProperties];
-	
-	return self;
+	return nil;
 }
 - (id) initSenderWithEndpoint:(MIDIEndpointRef)e	{
 	if (!e)	{
@@ -112,33 +125,40 @@ double			_machTimeToNsFactor;
 	
 	OSStatus			err;
 	
-	self = [self commonInit];
-	//	store a reference to the passed endpoint
-	endpointRef = e;
-	//	set the 'sender' flag
-	sender = YES;
-	//	load the properties for the endpoint
-	[self loadProperties];
-	//	create a MIDIClientRef- this will handle the midi data
-	err = MIDIClientCreate((CFStringRef)@"clientName",NULL,NULL,&clientRef);
-	if (err != noErr)	{
-		NSLog(@"\t\terr %ld at MIDIClientCreate C",(long)err);
-		[self release];
-		return nil;
+	self = [super init];
+	if(self)
+	{
+		// comon init methods
+		[self commonInit];
+		//	store a reference to the passed endpoint
+		endpointRef = e;
+		//	set the 'sender' flag
+		sender = YES;
+		//	load the properties for the endpoint
+		[self loadProperties];
+		//	create a MIDIClientRef- this will handle the midi data
+		err = MIDIClientCreate((CFStringRef)@"clientName",NULL,NULL,&clientRef);
+		if (err != noErr)	{
+			NSLog(@"\t\terr %ld at MIDIClientCreate C",(long)err);
+			[self release];
+			return nil;
+		}
+		//	create a MIDIOutputPort- the client owns the port
+		err = MIDIOutputPortCreate(clientRef,(CFStringRef)@"portName",&portRef);
+		if (err != noErr)	{
+			NSLog(@"\t\terr %ld at MIDIOutputPortCreate A",(long)err);
+			[self release];
+			return nil;
+		}
+		
+		//	set up the packet list related resources
+		packetList = (MIDIPacketList *) malloc(1024*sizeof(char));
+		currentPacket = MIDIPacketListInit(packetList);
+		
+		return self;
 	}
-	//	create a MIDIOutputPort- the client owns the port
-	err = MIDIOutputPortCreate(clientRef,(CFStringRef)@"portName",&portRef);
-	if (err != noErr)	{
-		NSLog(@"\t\terr %ld at MIDIOutputPortCreate A",(long)err);
-		[self release];
-		return nil;
-	}
-	
-	//	set up the packet list related resources
-	packetList = (MIDIPacketList *) malloc(1024*sizeof(char));
-	currentPacket = MIDIPacketListInit(packetList);
-	
-	return self;
+
+	return nil;
 }
 - (id) initSenderWithName:(NSString *)n	{
 	if (n == nil)	{
@@ -148,51 +168,56 @@ double			_machTimeToNsFactor;
 	
 	OSStatus			err;
 	
-	self = [self commonInit];
-	name = [n copy];
-	//	create a midi client which will receive midi data to work with
-	err = MIDIClientCreate((__bridge CFStringRef)n,NULL,NULL,&clientRef);
-	if (err != noErr)	{
-		NSLog(@"\t\terror %ld at MIDIClientCreate D",(long)err);
-		[self release];
-		return nil;
+	self = [super init];
+	if(self)
+	{
+		// comon init methods
+		[self commonInit];
+		
+		name = [n copy];
+		//	create a midi client which will receive midi data to work with
+		err = MIDIClientCreate((__bridge CFStringRef)n,NULL,NULL,&clientRef);
+		if (err != noErr)	{
+			NSLog(@"\t\terror %ld at MIDIClientCreate D",(long)err);
+			[self release];
+			return nil;
+		}
+		//	make a new destination, so other apps know i'm here
+		err = MIDISourceCreate(clientRef,(__bridge CFStringRef)n,&endpointRef);
+		if (err != noErr)	{
+			NSLog(@"\t\terror %ld at MIDISourceCreate A",(long)err);
+			[self release];
+			return nil;
+		}
+		//	create a MIDIOutputPort- the client owns the port
+		err = MIDIOutputPortCreate(clientRef,(__bridge CFStringRef)n,&portRef);
+		if (err != noErr)	{
+			NSLog(@"\t\terror %ld at MIDIOutputPortCreate B",(long)err);
+			[self release];
+			return nil;
+		}
+		
+		//	set the 'sender' flag
+		sender = YES;
+		virtualSender = YES;
+		
+		//	load the properties for the endpoint
+		[self loadProperties];
+		
+		//	set up the packet list related resources
+		packetList = (MIDIPacketList *) malloc(1024*sizeof(char));
+		currentPacket = MIDIPacketListInit(packetList);
+		
+		return self;
 	}
-	//	make a new destination, so other apps know i'm here
-	err = MIDISourceCreate(clientRef,(__bridge CFStringRef)n,&endpointRef);
-	if (err != noErr)	{
-		NSLog(@"\t\terror %ld at MIDISourceCreate A",(long)err);
-		[self release];
-		return nil;
-	}
-	//	create a MIDIOutputPort- the client owns the port
-	err = MIDIOutputPortCreate(clientRef,(__bridge CFStringRef)n,&portRef);
-	if (err != noErr)	{
-		NSLog(@"\t\terror %ld at MIDIOutputPortCreate B",(long)err);
-		[self release];
-		return nil;
-	}
 	
-	//	set the 'sender' flag
-	sender = YES;
-	virtualSender = YES;
-	
-	//	load the properties for the endpoint
-	[self loadProperties];
-	
-	//	set up the packet list related resources
-	packetList = (MIDIPacketList *) malloc(1024*sizeof(char));
-	currentPacket = MIDIPacketListInit(packetList);
-	
-	return self;
+	return nil;
 }
 
-- (id) commonInit	{
+- (void) commonInit	{
 	
 	pthread_mutexattr_t		attr;
 	
-	
-	
-	self = [super init];
 	//	load up some null values so if anything goes wrong, i can know about it
 	endpointRef = 0;
 	properties = [[NSMutableDictionary dictionaryWithCapacity:0] retain];
@@ -221,8 +246,6 @@ double			_machTimeToNsFactor;
 		for (int cc=32;cc<64;++cc)
 			twoPieceCCVals[c][cc] = -1;
 	}
-	
-	return self;
 }
 
 - (void) dealloc	{

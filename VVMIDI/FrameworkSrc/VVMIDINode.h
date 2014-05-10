@@ -48,7 +48,7 @@ extern double		_machTimeToNsFactor;
 - (id) initSenderWithEndpoint:(MIDIEndpointRef)e;
 - (id) initSenderWithName:(NSString *)n;
 
-- (id) commonInit;
+- (void) commonInit;
 
 - (void) loadProperties;
 - (void) receivedMIDI:(NSArray *)a;
