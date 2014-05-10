@@ -67,107 +67,92 @@
 }
 - (void) threadCallback	{
 	//NSLog(@"%s",__func__);
-	NSAutoreleasePool		*pool = [[NSAutoreleasePool alloc] init];
 	
-	USE_CUSTOM_ASSERTION_HANDLER
+	@autoreleasepool{
 	
-	BOOL					tmpRunning = YES;
-	BOOL					tmpBail = NO;
-	OSSpinLockLock(&valLock);
-	running = YES;
-	bail = NO;
-	OSSpinLockUnlock(&valLock);
-	
-	if (![NSThread setThreadPriority:1.0])
-		NSLog(@"\terror setting thread priority to 1.0");
-	
-	STARTLOOP:
-	@try	{
-		while ((tmpRunning) && (!tmpBail))	{
-			//NSLog(@"\t\tproc start");
-			struct timeval		startTime;
-			struct timeval		stopTime;
-			double				executionTime;
-			double				sleepDuration;	//	in microseconds!
-			
-			gettimeofday(&startTime,NULL);
-			OSSpinLockLock(&valLock);
-			if (!paused)	{
-				executingCallback = YES;
-				OSSpinLockUnlock(&valLock);
-				//@try	{
-					//	if there's a target object, ping it (delegate-style)
-					if (targetObj != nil)
-						[targetObj performSelector:targetSel];
-					//	else just call threadProc (subclass-style)
-					else
-						[self threadProc];
-				//}
-				//@catch (NSException *err)	{
-				//	NSLog(@"%s caught exception, %@",__func__,err);
-				//}
+		USE_CUSTOM_ASSERTION_HANDLER
+		
+		BOOL					tmpRunning = YES;
+		BOOL					tmpBail = NO;
+		OSSpinLockLock(&valLock);
+		running = YES;
+		bail = NO;
+		OSSpinLockUnlock(&valLock);
+		
+		if (![NSThread setThreadPriority:1.0])
+			NSLog(@"\terror setting thread priority to 1.0");
+		
+		STARTLOOP:
+		@try	{
+			while ((tmpRunning) && (!tmpBail))	{
 				
-				OSSpinLockLock(&valLock);
-				executingCallback = NO;
-				OSSpinLockUnlock(&valLock);
-			}
-			else
-				OSSpinLockUnlock(&valLock);
-			
-			//++runLoopCount;
-			//if (runLoopCount > 4)	{
-			{
-				NSAutoreleasePool		*oldPool = pool;
-				pool = nil;
-				[oldPool release];
-				pool = [[NSAutoreleasePool alloc] init];
-			//	runLoopCount = 0;
-			}
-			
-			//	figure out how long it took to run the callback
-			gettimeofday(&stopTime,NULL);
-			while (stopTime.tv_sec > startTime.tv_sec)	{
-				--stopTime.tv_sec;
-				stopTime.tv_usec = stopTime.tv_usec + 1000000;
-			}
-			executionTime = ((double)(stopTime.tv_usec-startTime.tv_usec))/1000000.0;
-			sleepDuration = interval - executionTime;
-			
-			//	only sleep if duration's > 0, sleep for a max of 1 sec
-			if (sleepDuration > 0)	{
-				if (sleepDuration > maxInterval)
-					sleepDuration = maxInterval;
-				[NSThread sleepForTimeInterval:sleepDuration];
-			}
-			
-			OSSpinLockLock(&valLock);
-			tmpRunning = running;
-			tmpBail = bail;
-			OSSpinLockUnlock(&valLock);
-			//NSLog(@"\t\tproc looping");
+				@autoreleasepool {
+					//NSLog(@"\t\tproc start");
+					struct timeval		startTime;
+					struct timeval		stopTime;
+					double				executionTime;
+					double				sleepDuration;	//	in microseconds!
+					
+					gettimeofday(&startTime,NULL);
+					OSSpinLockLock(&valLock);
+					if (!paused)	{
+						executingCallback = YES;
+						OSSpinLockUnlock(&valLock);
+						//@try	{
+							//	if there's a target object, ping it (delegate-style)
+							if (targetObj != nil)
+								[targetObj performSelector:targetSel];
+							//	else just call threadProc (subclass-style)
+							else
+								[self threadProc];
+						//}
+						//@catch (NSException *err)	{
+						//	NSLog(@"%s caught exception, %@",__func__,err);
+						//}
+						
+						OSSpinLockLock(&valLock);
+						executingCallback = NO;
+						OSSpinLockUnlock(&valLock);
+					}
+					else
+						OSSpinLockUnlock(&valLock);
+					
+					//	figure out how long it took to run the callback
+					gettimeofday(&stopTime,NULL);
+					while (stopTime.tv_sec > startTime.tv_sec)	{
+						--stopTime.tv_sec;
+						stopTime.tv_usec = stopTime.tv_usec + 1000000;
+					}
+					executionTime = ((double)(stopTime.tv_usec-startTime.tv_usec))/1000000.0;
+					sleepDuration = interval - executionTime;
+					
+					//	only sleep if duration's > 0, sleep for a max of 1 sec
+					if (sleepDuration > 0)	{
+						if (sleepDuration > maxInterval)
+							sleepDuration = maxInterval;
+						[NSThread sleepForTimeInterval:sleepDuration];
+					}
+					
+					OSSpinLockLock(&valLock);
+					tmpRunning = running;
+					tmpBail = bail;
+					OSSpinLockUnlock(&valLock);
+					//NSLog(@"\t\tproc looping");
+				}
+			} // end Auto Release Pool - vade
 		}
-	}
-	@catch (NSException *err)	{
-		NSAutoreleasePool		*oldPool = pool;
-		pool = nil;
-		if (targetObj == nil)
-			NSLog(@"\t\t%s caught exception %@ on %@",__func__,err,self);
-		else
-			NSLog(@"\t\t%s caught exception %@ on %@, target is %@",__func__,err,self,[targetObj class]);
-		@try {
-			[oldPool release];
-		}
-		@catch (NSException *subErr)	{
+		@catch (NSException *err)	{
+
 			if (targetObj == nil)
-				NSLog(@"\t\t%s caught sub-exception %@ on %@",__func__,subErr,self);
+				NSLog(@"\t\t%s caught exception %@ on %@",__func__,err,self);
 			else
-				NSLog(@"\t\t%s caught sub-exception %@ on %@, target is %@",__func__,subErr,self,[targetObj class]);
+				NSLog(@"\t\t%s caught exception %@ on %@, target is %@",__func__,err,self,[targetObj class]);
+
+			goto STARTLOOP;
 		}
-		pool = [[NSAutoreleasePool alloc] init];
-		goto STARTLOOP;
-	}
 	
-	[pool release];
+	} // end Auto Release Pool - vade
+	
 	OSSpinLockLock(&valLock);
 	running = NO;
 	OSSpinLockUnlock(&valLock);
