@@ -110,7 +110,7 @@
 		[theNib instantiateNibWithOwner:self topLevelObjects:&nibTopLevelObjects];
 #endif
 		//	retain the array of top-level objects (they have to be explicitly freed)
-		[nibTopLevelObjects retain];
+//		[nibTopLevelObjects retain];
 		return self;
 	}
 	BAIL:
