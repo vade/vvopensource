@@ -217,165 +217,152 @@
 	}
 }
 - (void) OSCThreadProc	{
-	NSAutoreleasePool			*pool = [[NSAutoreleasePool alloc] init];
-	
-	thread = [NSThread currentThread];
-	if ([NSThread threadPriority]!=1.0)
-		[NSThread setThreadPriority:1.0];
-	
-	STARTLOOP:
-	@try	{
-		while (thread!=nil && ![thread isCancelled] && bound)	{
-			fd_set				readFileDescriptor;
-			int					readyFileCount;
-			struct timeval		timeout;
-			
-			//	set up the file descriptors and timeout struct
-			FD_ZERO(&readFileDescriptor);
-			FD_SET(sock, &readFileDescriptor);
-			timeout.tv_sec = 0;
-			timeout.tv_usec = 1000;		//	0.01 secs = 100hz
-			
-			OSSpinLockLock(&socketLock);
-			//	figure out if there are any open file descriptors
-			readyFileCount = select(sock+1, &readFileDescriptor, (fd_set *)NULL, (fd_set *)NULL, &timeout);
-			if (readyFileCount < 1)	{	//	if there was an error, bail immediately
-				OSSpinLockUnlock(&socketLock);
-				if (readyFileCount < 0)	{
-					NSLog(@"\t\terr: socket got closed unexpectedly");
-					[self stop];
-				}
-			}
-			
-			//	if the socket is one of the file descriptors, i need to get data from it
-			while (FD_ISSET(sock, &readFileDescriptor))	{
-				//NSLog(@"\t\twhile/packet ping");
-				struct sockaddr_in		addrFrom;
-				memset(&addrFrom,0,sizeof(addrFrom));
-				addrFrom.sin_family = AF_INET;
-				socklen_t				addrFromLen = sizeof(struct sockaddr_in);
-				int						numBytes;
-				BOOL					skipThisPacket = NO;
+	@autoreleasepool {
+		thread = [NSThread currentThread];
+		if ([NSThread threadPriority]!=1.0)
+			[NSThread setThreadPriority:1.0];
+		
+		STARTLOOP:
+		@try	{
+			while (thread!=nil && ![thread isCancelled] && bound)	{
 				
-				addrFromLen = sizeof(addrFrom);
-				numBytes = (int)recvfrom(sock, buf, 65506, 0, (struct sockaddr *)&addrFrom, &addrFromLen);
-				if (numBytes < 1)	{
-					NSLog(@"\t\terr on recvfrom: %i",errno);
-					skipThisPacket = YES;
-				}
-				if (numBytes % 4)	{
-					NSLog(@"\t\terr: bytes isn't multiple of 4 in %s",__func__);
-					skipThisPacket = YES;
-				}
-				
-				if (!skipThisPacket)	{
-					buf[numBytes] = '\0';
+				@autoreleasepool {
 					
-					//	if i've reached this point, i have a buffer of the appropriate
-					//	length which needs to be parsed.  the buffer doesn't contain
-					//	multiple messages, or multiple root-level bundles
-					[self
-						parseRawBuffer:buf
-						ofMaxLength:numBytes
-						fromAddr:(unsigned int)addrFrom.sin_addr.s_addr
-						port:(unsigned short)addrFrom.sin_port];
-				}
-				
-				readyFileCount = select(sock+1, &readFileDescriptor, (fd_set *)NULL, (fd_set *)NULL, &timeout);
-			}
-			OSSpinLockUnlock(&socketLock);
-			//	if there's stuff in the scratch dict, i have to pass the info on to my delegate
-			if ([scratchArray count] > 0)	{
-				NSArray				*tmpArray = nil;
-				
-				OSSpinLockLock(&scratchLock);
-					tmpArray = [NSArray arrayWithArray:scratchArray];
-					[scratchArray removeAllObjects];
-				OSSpinLockUnlock(&scratchLock);
-				
-				[self handleScratchArray:tmpArray];
-			}
-			//	check the query dict occasionally for queries which have timed out and need a reply
-			if ([timeoutSWatch timeSinceStart]>0.5)	{
-				[queryDict wrlock];
-				__block NSMutableArray		*stringsToRemove = nil;
-				__block NSMutableArray		*expiredQueries = nil;
-				NSDate						*nowDate = [NSDate date];
-				[[queryDict dict] enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop)	{
-					//	if the query's timeout has expired
-					if ([obj _timeoutCheckAgainstDate:nowDate])	{
-						//	store the string (i need to remove the query from the dict)
-						if (stringsToRemove==nil)
-							stringsToRemove = [[NSMutableArray alloc] initWithCapacity:0];
-						[stringsToRemove addObject:key];
-						//	store the query (i have to dispatch an error for the timeout after removing them)
-						if (expiredQueries==nil)
-							expiredQueries = [[NSMutableArray alloc] initWithCapacity:0];
-						[expiredQueries addObject:obj];
+					fd_set				readFileDescriptor;
+					int					readyFileCount;
+					struct timeval		timeout;
+					
+					//	set up the file descriptors and timeout struct
+					FD_ZERO(&readFileDescriptor);
+					FD_SET(sock, &readFileDescriptor);
+					timeout.tv_sec = 0;
+					timeout.tv_usec = 1000;		//	0.01 secs = 100hz
+					
+					OSSpinLockLock(&socketLock);
+					//	figure out if there are any open file descriptors
+					readyFileCount = select(sock+1, &readFileDescriptor, (fd_set *)NULL, (fd_set *)NULL, &timeout);
+					if (readyFileCount < 1)	{	//	if there was an error, bail immediately
+						OSSpinLockUnlock(&socketLock);
+						if (readyFileCount < 0)	{
+							NSLog(@"\t\terr: socket got closed unexpectedly");
+							[self stop];
+						}
 					}
-				}];
-				if (stringsToRemove != nil)
-					[[queryDict dict] removeObjectsForKeys:stringsToRemove];
-				[queryDict unlock];
-				
-				[timeoutSWatch start];
-				
-				//	now that the query dict has been re-locked, send error messages for all the expired queries
-				for (OSCQueryReply *queryReply in expiredQueries)	{
-					[queryReply dispatchReply:[OSCMessage createErrorForMessage:[queryReply initialQuery]]];
+					
+					//	if the socket is one of the file descriptors, i need to get data from it
+					while (FD_ISSET(sock, &readFileDescriptor))	{
+						//NSLog(@"\t\twhile/packet ping");
+						struct sockaddr_in		addrFrom;
+						memset(&addrFrom,0,sizeof(addrFrom));
+						addrFrom.sin_family = AF_INET;
+						socklen_t				addrFromLen = sizeof(struct sockaddr_in);
+						int						numBytes;
+						BOOL					skipThisPacket = NO;
+						
+						addrFromLen = sizeof(addrFrom);
+						numBytes = (int)recvfrom(sock, buf, 65506, 0, (struct sockaddr *)&addrFrom, &addrFromLen);
+						if (numBytes < 1)	{
+							NSLog(@"\t\terr on recvfrom: %i",errno);
+							skipThisPacket = YES;
+						}
+						if (numBytes % 4)	{
+							NSLog(@"\t\terr: bytes isn't multiple of 4 in %s",__func__);
+							skipThisPacket = YES;
+						}
+						
+						if (!skipThisPacket)	{
+							buf[numBytes] = '\0';
+							
+							//	if i've reached this point, i have a buffer of the appropriate
+							//	length which needs to be parsed.  the buffer doesn't contain
+							//	multiple messages, or multiple root-level bundles
+							[self
+								parseRawBuffer:buf
+								ofMaxLength:numBytes
+								fromAddr:(unsigned int)addrFrom.sin_addr.s_addr
+								port:(unsigned short)addrFrom.sin_port];
+						}
+						
+						readyFileCount = select(sock+1, &readFileDescriptor, (fd_set *)NULL, (fd_set *)NULL, &timeout);
+					}
+					OSSpinLockUnlock(&socketLock);
+					//	if there's stuff in the scratch dict, i have to pass the info on to my delegate
+					if ([scratchArray count] > 0)	{
+						NSArray				*tmpArray = nil;
+						
+						OSSpinLockLock(&scratchLock);
+							tmpArray = [NSArray arrayWithArray:scratchArray];
+							[scratchArray removeAllObjects];
+						OSSpinLockUnlock(&scratchLock);
+						
+						[self handleScratchArray:tmpArray];
+					}
+					//	check the query dict occasionally for queries which have timed out and need a reply
+					if ([timeoutSWatch timeSinceStart]>0.5)	{
+						[queryDict wrlock];
+						__block NSMutableArray		*stringsToRemove = nil;
+						__block NSMutableArray		*expiredQueries = nil;
+						NSDate						*nowDate = [NSDate date];
+						[[queryDict dict] enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop)	{
+							//	if the query's timeout has expired
+							if ([obj _timeoutCheckAgainstDate:nowDate])	{
+								//	store the string (i need to remove the query from the dict)
+								if (stringsToRemove==nil)
+									stringsToRemove = [[NSMutableArray alloc] initWithCapacity:0];
+								[stringsToRemove addObject:key];
+								//	store the query (i have to dispatch an error for the timeout after removing them)
+								if (expiredQueries==nil)
+									expiredQueries = [[NSMutableArray alloc] initWithCapacity:0];
+								[expiredQueries addObject:obj];
+							}
+						}];
+						if (stringsToRemove != nil)
+							[[queryDict dict] removeObjectsForKeys:stringsToRemove];
+						[queryDict unlock];
+						
+						[timeoutSWatch start];
+						
+						//	now that the query dict has been re-locked, send error messages for all the expired queries
+						for (OSCQueryReply *queryReply in expiredQueries)	{
+							[queryReply dispatchReply:[OSCMessage createErrorForMessage:[queryReply initialQuery]]];
+						}
+						
+						VVRELEASE(stringsToRemove);
+						VVRELEASE(expiredQueries);
+					}
+					//	is it time to start advertising a bonjour/zeroconf service yet?
+					if (zeroConfDest==nil)	{
+						OSSpinLockLock(&zeroConfLock);
+						if (zeroConfDest==nil && portLabel!=nil && [zeroConfSwatch timeSinceStart]>1.0)	{
+							zeroConfDest = [[NSNetService alloc]
+								initWithDomain:@"local."
+								type:@"_osc._udp."
+		//#if IPHONE
+		//						name:[NSString stringWithFormat:@"%@ %@",[[UIDevice currentDevice] name],portLabel]
+		//#else
+		//						name:[NSString stringWithFormat:@"%@ %@",SCDynamicStoreCopyComputerName(NULL, NULL),portLabel]
+		//#endif
+								name:portLabel
+								port:port];
+							[zeroConfDest publish];
+						}
+						OSSpinLockUnlock(&zeroConfLock);
+					}
+					
+					
+					if (interval > 0.0)
+						[NSThread sleepForTimeInterval:interval];
 				}
-				
-				VVRELEASE(stringsToRemove);
-				VVRELEASE(expiredQueries);
 			}
-			//	is it time to start advertising a bonjour/zeroconf service yet?
-			if (zeroConfDest==nil)	{
-				OSSpinLockLock(&zeroConfLock);
-				if (zeroConfDest==nil && portLabel!=nil && [zeroConfSwatch timeSinceStart]>1.0)	{
-					zeroConfDest = [[NSNetService alloc]
-						initWithDomain:@"local."
-						type:@"_osc._udp."
-//#if IPHONE
-//						name:[NSString stringWithFormat:@"%@ %@",[[UIDevice currentDevice] name],portLabel]
-//#else
-//						name:[NSString stringWithFormat:@"%@ %@",SCDynamicStoreCopyComputerName(NULL, NULL),portLabel]
-//#endif
-						name:portLabel
-						port:port];
-					[zeroConfDest publish];
-				}
-				OSSpinLockUnlock(&zeroConfLock);
-			}
-			
-			
-			{
-				NSAutoreleasePool		*oldPool = pool;
-				pool = nil;
-				[oldPool release];
-				pool = [[NSAutoreleasePool alloc] init];
-			}
-			
-			if (interval > 0.0)
-				[NSThread sleepForTimeInterval:interval];
 		}
-	}
-	@catch (NSException *err)	{
-		NSAutoreleasePool		*oldPool = pool;
-		pool = nil;
-		NSLog(@"\t\t%s caught exception %@ on %@",__func__,err,self);
-		@try {
-			[oldPool release];
+		@catch (NSException *err)	{
+			NSLog(@"\t\t%s caught exception %@ on %@",__func__,err,self);
+			goto STARTLOOP;
 		}
-		@catch (NSException *subErr)	{
-			NSLog(@"\t\t%s caught sub-exception %@ on %@",__func__,subErr,self);
-		}
-		pool = [[NSAutoreleasePool alloc] init];
-		goto STARTLOOP;
-	}
-	
-	thread = nil;
-	
-	[pool release];
+		
+		thread = nil;
+		
+	} // End Auto Release Pool - vade
 }
 
 /*
