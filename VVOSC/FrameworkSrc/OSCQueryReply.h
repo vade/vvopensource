@@ -4,7 +4,7 @@
 #import <Cocoa/Cocoa.h>
 #endif
 #import "OSCMessage.h"
-#import <VVBasics/MAZeroingWeakRef.h>
+//#import <VVBasics/MAZeroingWeakRef.h>
 
 
 
@@ -20,7 +20,7 @@
 @interface OSCQueryReply : NSObject	{
 	OSCMessage				*initialQuery;
 	void					(^replyBlock)(OSCMessage *replyMsg);
-	VV_MAZeroingWeakRef		*replyDelegateZWR;
+	__weak id				replyDelegateZWR;
 	NSDate					*timeoutDate;
 }
 

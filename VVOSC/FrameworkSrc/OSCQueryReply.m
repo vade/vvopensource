@@ -32,7 +32,7 @@
 	if (self = [super init])	{
 		initialQuery = [m retain];
 		replyBlock = nil;
-		replyDelegateZWR = [[VV_MAZeroingWeakRef alloc] initWithTarget:d];
+		replyDelegateZWR = d; //[[VV_MAZeroingWeakRef alloc] initWithTarget:d];
 		timeoutDate = [[NSDate dateWithTimeIntervalSinceNow:t] retain];
 		return self;
 	}
